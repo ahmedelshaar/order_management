@@ -29,6 +29,11 @@ class UserResource extends Resource
         return parent::getEloquentQuery()->where('role', 1);
     }
 
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->role == 2;
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -57,6 +62,14 @@ class UserResource extends Resource
                         ->label('الحالة')
                         ->default(1)
                         ->required(),
+                    Forms\Components\Select::make('auto_assign')
+                        ->options([
+                            1 => 'نعم',
+                            0 => 'لا',
+                        ])
+                        ->label('التعيين التلقائي')
+                        ->default(1)
+                        ->required(),
                 ])->columns(2)
             ]);
     }
@@ -77,6 +90,9 @@ class UserResource extends Resource
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('الحالة')
+                    ->boolean(),
+                Tables\Columns\IconColumn::make('auto_assign')
+                    ->label('التعيين التلقائي')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')

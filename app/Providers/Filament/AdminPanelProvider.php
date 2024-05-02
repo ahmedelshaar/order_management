@@ -57,6 +57,7 @@ class AdminPanelProvider extends PanelProvider
             ->profile()
             ->topNavigation()
             ->font('cairo')
+            ->breadcrumbs(false)
             ->maxContentWidth('full')
             ->spa();
     }

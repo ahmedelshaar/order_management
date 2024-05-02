@@ -6,13 +6,16 @@ use App\Enums\OrderStatusEnum;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers;
 use App\Models\Order;
+use Filament\Tables\Actions\ActionGroup;
 use Filament\Forms;
+use Filament\Forms\Components\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Collection;
 
 class OrderResource extends Resource
 {
@@ -22,6 +25,7 @@ class OrderResource extends Resource
     protected static ?string $label = 'طلبات';
     protected static ?string $pluralLabel = 'طلبات';
     protected static ?string $modelLabel = 'طلب';
+
 
     public static function getEloquentQuery(): Builder
     {
@@ -66,6 +70,7 @@ class OrderResource extends Resource
                             ->label('المسؤول')
                             ->searchable()
                             ->preload()
+                            ->disabled(fn () => auth()->user()->role === 1)
                             ->relationship('user', 'name'),
                     ])
                     ->columns(2),
@@ -81,12 +86,18 @@ class OrderResource extends Resource
                                 ->numeric(),
                             Forms\Components\TextInput::make('mobile_number')
                                 ->label('رقم الجوال')
+                                ->suffixAction(Action::make('whatsapp')
+                                    ->icon('heroicon-o-chat-bubble-left-right')
+                                    ->url(fn ($state) => "https://wa.me/966{$state}")
+                                    ->openUrlInNewTab()
+                                    ->hidden(fn ($state) => empty($state))
+                                )
                                 ->required(),
-                            Forms\Components\Select::make('nationality')
+                            Forms\Components\Select::make('is_saudi')
                                 ->label('الجنسية')
                                 ->options([
-                                    'سعودي' => 'سعودي',
-                                    'غير سعودي' => 'غير سعودي',
+                                    1 => 'سعودي',
+                                    0 => 'غير سعودي',
                                 ])
                                 ->required(),
                             Forms\Components\TextInput::make('city')
@@ -134,6 +145,14 @@ class OrderResource extends Resource
                     ])->columns(2),
                 Forms\Components\Section::make('ملاحظات')
                     ->schema([
+                        Forms\Components\Select::make('traffic_violations')
+                            ->label('مخالفات المرور')
+                            ->required()
+                            ->options([
+                                1 => 'نعم',
+                                0 => 'لا',
+                            ])
+                            ->columnSpanFull(),
                         Forms\Components\Textarea::make('notes')
                             ->label('ملاحظات')
                             ->rows(3)
@@ -146,9 +165,13 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('id')
+                    ->label('رقم الطلب')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('المسؤول')
                     ->toggleable()
+                    ->visible(fn () => auth()->user()->role === 1)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
@@ -179,8 +202,9 @@ class OrderResource extends Resource
                     ->label('رقم الجوال')
                     ->toggleable()
                     ->searchable(),
-                Tables\Columns\TextColumn::make('nationality')
+                Tables\Columns\IconColumn::make('is_saudi')
                     ->label('الجنسية')
+                    ->boolean()
                     ->toggleable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('city')
@@ -217,6 +241,10 @@ class OrderResource extends Resource
                     ->label('النوع')
                     ->toggleable()
                     ->searchable(),
+                Tables\Columns\IconColumn::make('traffic_violations')
+                    ->label('مخالفات المرور')
+                    ->boolean()
+                    ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('تاريخ الإنشاء')
                     ->dateTime()
@@ -229,11 +257,19 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                Tables\Filters\Filter::make('assigned_user')
+                    ->label('تم تعيين مسؤول')
+                    ->query(fn ($query) => $query->whereNotNull('user_id')),
+                Tables\Filters\Filter::make('no_assigned_user')
+                    ->label('بدون مسؤول')
+                    ->default()
+                    ->query(fn ($query) => $query->whereNull('user_id')),
                 Tables\Filters\SelectFilter::make('user_id')
                     ->label('المسؤول')
                     ->preload()
                     ->searchable()
-                    ->relationship('user', 'name', fn(Builder $query) => $query->where('role', 2)),
+                    ->visible(fn () => auth()->user()->role == 2)
+                    ->relationship('user', 'name', fn(Builder $query) => $query->where('role', '=', 1)),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
@@ -254,15 +290,50 @@ class OrderResource extends Resource
                         1 => 'نعم',
                         0 => 'لا',
                     ]),
+                Tables\Filters\SelectFilter::make('traffic_violations')
+                    ->label('مخالفات المرور')
+                    ->options([
+                        1 => 'نعم',
+                        0 => 'لا',
+                    ]),
             ])
+            ->defaultSort('id', 'desc')
+            ->poll('10s')
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ViewAction::make(),
+                    Tables\Actions\DeleteAction::make()
+                      ->visible(fn () => auth()->user()->role === 2),
+                    Tables\Actions\Action::make('whatsapp')
+                        ->label('الواتساب')
+                        ->icon('heroicon-o-chat-bubble-left-right')
+                        ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}")
+                        ->openUrlInNewTab(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+                    Tables\Actions\BulkAction::make('Assign')
+                        ->icon('heroicon-o-user')
+                        ->label('تعيين مسؤول')
+                        ->modal()
+                        ->form([
+                            Forms\Components\Select::make('user_id')
+                                ->label('المسؤول')
+                                ->required()
+                                ->preload()
+                                ->searchable()
+                                ->relationship('user', 'name', fn(Builder $query) => $query->where('role', '=', 2)),
+                        ])
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records, array $data) {
+                            $records->each(fn (Order $order) => $order->update(['user_id' => $data['user_id']]));
+                        })
+                        ->deselectRecordsAfterCompletion()
+                ])
+            ])
+            ->checkIfRecordIsSelectableUsing(fn ($record) => $record->user_id == null);
     }
 
     public static function getRelations(): array
