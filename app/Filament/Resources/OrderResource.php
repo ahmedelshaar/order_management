@@ -324,7 +324,7 @@ class OrderResource extends Resource
                                 ->required()
                                 ->preload()
                                 ->searchable()
-                                ->relationship('user', 'name', fn(Builder $query) => $query->where('role', '=', 2)),
+                                ->relationship('user', 'name', fn(Builder $query) => $query->where('role', '=', 1)),
                         ])
                         ->requiresConfirmation()
                         ->action(function (Collection $records, array $data) {
