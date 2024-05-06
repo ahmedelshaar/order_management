@@ -88,7 +88,7 @@ class OrderResource extends Resource
                                 ->label('رقم الجوال')
                                 ->suffixAction(Action::make('whatsapp')
                                     ->icon('heroicon-o-chat-bubble-left-right')
-                                    ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز {$record->name} نشكرك على تقديم طلب تمويل على سيارة {$record->car_brand} {$record->car_name} برقم طلب {$record->id}")
+                                    ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز ({$record->name}) الخيار السليم للسيارات ترحب بكم  نشكرك على تقديم طلب تمويل سيارة نيسان التيما برقم طلب {$record->id}")
                                     ->openUrlInNewTab()
                                     ->hidden(fn ($state) => empty($state))
                                 )
@@ -171,7 +171,6 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('المسؤول')
                     ->toggleable()
-                    ->visible(fn () => auth()->user()->role === 1)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status')
                     ->label('الحالة')
@@ -304,11 +303,11 @@ class OrderResource extends Resource
                     Tables\Actions\EditAction::make(),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\DeleteAction::make()
-                      ->visible(fn () => auth()->user()->role === 2),
+                        ->visible(fn () => auth()->user()->role === 2),
                     Tables\Actions\Action::make('whatsapp')
                         ->label('الواتساب')
                         ->icon('heroicon-o-chat-bubble-left-right')
-                        ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز {$record->name} نشكرك على تقديم طلب تمويل على سيارة {$record->car_brand} {$record->car_name} برقم طلب {$record->id}")
+                        ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز ({$record->name}) الخيار السليم للسيارات ترحب بكم  نشكرك على تقديم طلب تمويل سيارة نيسان التيما برقم طلب {$record->id}")
                         ->openUrlInNewTab(),
                 ])
             ])
