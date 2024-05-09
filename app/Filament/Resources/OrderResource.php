@@ -88,7 +88,7 @@ class OrderResource extends Resource
                                 ->label('رقم الجوال')
                                 ->suffixAction(Action::make('whatsapp')
                                     ->icon('heroicon-o-chat-bubble-left-right')
-                                    ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز ({$record->name}) الخيار السليم للسيارات ترحب بكم  نشكرك على تقديم طلب تمويل سيارة نيسان التيما برقم طلب {$record->id}")
+                                    ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز ({$record->name}) الخيار السليم للسيارات ترحب بكم  نشكرك على تقديم طلب تمويل سيارة {$record->car_brand} {$record->car_name} برقم طلب {$record->id}")
                                     ->openUrlInNewTab()
                                     ->hidden(fn ($state) => empty($state))
                                 )
@@ -307,7 +307,7 @@ class OrderResource extends Resource
                     Tables\Actions\Action::make('whatsapp')
                         ->label('الواتساب')
                         ->icon('heroicon-o-chat-bubble-left-right')
-                        ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز ({$record->name}) الخيار السليم للسيارات ترحب بكم  نشكرك على تقديم طلب تمويل سيارة نيسان التيما برقم طلب {$record->id}")
+                        ->url(fn ($record) => "https://wa.me/966{$record->mobile_number}?text=عملينا العزيز ({$record->name}) الخيار السليم للسيارات ترحب بكم  نشكرك على تقديم طلب تمويل سيارة {$record->car_brand} {$record->car_name} برقم طلب {$record->id}")
                         ->openUrlInNewTab(),
                 ])
             ])
