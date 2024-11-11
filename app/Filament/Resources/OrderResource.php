@@ -14,6 +14,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Collection;
 
@@ -34,6 +35,16 @@ class OrderResource extends Resource
             return $query;
         }
         return $query->where('user_id', auth()->id());
+    }
+
+    public static function getPluralLabel(): ?string
+    {
+        return 'طلبات';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'طلب';
     }
 
     public static function form(Form $form): Form
@@ -71,7 +82,7 @@ class OrderResource extends Resource
                             ->searchable()
                             ->preload()
                             ->disabled(fn () => auth()->user()->role === 1)
-                            ->relationship('user', 'name'),
+                            ->relationship('user', 'name', fn($query) => $query->where('role', 2))
                     ])
                     ->columns(2),
                 Forms\Components\Split::make([
@@ -125,13 +136,9 @@ class OrderResource extends Resource
                                     0 => 'لا',
                                 ])
                                 ->required(),
-                            Forms\Components\Textarea::make('liabilities_description')
-                                ->label('وصف الالتزامات')
+                            Forms\Components\Textarea::make('liabilities_amount')
+                                ->label('قيمة الالتزامات')
                                 ->columnSpanFull(),
-                            Forms\Components\TextInput::make('installment')
-                                ->label('القسط')
-                                ->required()
-                                ->numeric(),
                         ])
                 ])->columnSpanFull(),
                 Forms\Components\Section::make('بيانات السيارة')
@@ -142,7 +149,10 @@ class OrderResource extends Resource
                         Forms\Components\TextInput::make('car_name')
                             ->label('النوع')
                             ->required(),
-                    ])->columns(2),
+                        Forms\Components\TextInput::make('car_model')
+                            ->label('الموديل')
+                            ->required(),
+                    ])->columns(3),
                 Forms\Components\Section::make('ملاحظات')
                     ->schema([
                         Forms\Components\Select::make('traffic_violations')
@@ -240,6 +250,10 @@ class OrderResource extends Resource
                     ->label('النوع')
                     ->toggleable()
                     ->searchable(),
+                Tables\Columns\TextColumn::make('car_model')
+                    ->label('الموديل')
+                    ->toggleable()
+                    ->searchable(),
                 Tables\Columns\IconColumn::make('traffic_violations')
                     ->label('مخالفات المرور')
                     ->boolean()
@@ -268,7 +282,7 @@ class OrderResource extends Resource
                     ->preload()
                     ->searchable()
                     ->visible(fn () => auth()->user()->role == 2)
-                    ->relationship('user', 'name'),
+                    ->relationship('user', 'name', fn ($query) => $query->where('role', 2)),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
@@ -323,7 +337,7 @@ class OrderResource extends Resource
                                 ->required()
                                 ->preload()
                                 ->searchable()
-                                ->relationship('user', 'name'),
+                                ->relationship('user', 'name', fn ($query) => $query->where('role', 2))
                         ])
                         ->requiresConfirmation()
                         ->action(function (Collection $records, array $data) {
@@ -350,4 +364,15 @@ class OrderResource extends Resource
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
     }
+
+    public static function canDelete(Model $record): bool
+    {
+        return auth()->user()->role === 2;
+    }
+
+    public static function canDeleteAny(): bool
+    {
+        return auth()->user()->role === 2;
+    }
+
 }

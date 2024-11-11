@@ -20,13 +20,19 @@ class UserResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $label = 'مستخدمين';
-    protected static ?string $pluralLabel = 'مستخدمين';
-    protected static ?string $modelLabel = 'مستخدم';
+    public static function getPluralModelLabel(): string
+    {
+        return 'المستخدمين';
+    }
+
+    public static function getModelLabel(): string
+    {
+        return 'المستخدم';
+    }
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('role', 1);
+        return parent::getEloquentQuery()->where('role', 1)->where('id', '!=', 2);
     }
 
     public static function canViewAny(): bool

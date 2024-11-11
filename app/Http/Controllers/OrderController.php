@@ -13,37 +13,18 @@ class OrderController extends Controller
             'name' => 'required|string',
             'age' => 'required|numeric',
             'mobile_number' => 'required',
-            'nationality' => 'required|string',
+            'is_saudi' => 'required|boolean',
             'city' => 'required|string',
             'company_name' => 'required|string',
             'salary' => 'required|numeric',
             'bank' => 'required|string',
-            'liabilities' => 'required|string',
-            'liabilities_description' => 'nullable|string',
+            'liabilities' => 'required|boolean',
+            'liabilities_amount' => 'required|numeric',
             'car_brand' => 'required|string',
             'car_name' => 'required|string',
-            'traffic_violations' => 'required|string',
+            'car_model' => 'required|string',
+            'traffic_violations' => 'required|boolean',
         ]);
-
-        if ($request->liabilities == 'لايوجد') {
-            $data['liabilities'] = false;
-        } else {
-            $data['liabilities'] = true;
-        }
-
-        if ($request->nationality == 'سعودي') {
-            $data['is_saudi'] = true;
-        } else {
-            $data['is_saudi'] = false;
-        }
-
-        if ($request->traffic_violations == 'لايوجد') {
-            $data['traffic_violations'] = false;
-        } else {
-            $data['traffic_violations'] = true;
-        }
-
-        unset ($data['nationality']);
 
         Order::create($data);
     }

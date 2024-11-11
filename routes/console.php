@@ -13,7 +13,7 @@ Artisan::command('assign', function () {
                 $query->where('status', \App\Enums\OrderStatusEnum::NEW);
             }])
             ->having('orders_count', '<', 10)
-            ->orderBy('orders_count')
+            ->orderBy('orders_count', 'asc')
             ->first();
         $order->user_id = $user->id;
         $order->save();

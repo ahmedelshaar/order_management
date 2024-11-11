@@ -20,10 +20,11 @@ class Order extends Model
         'salary',
         'bank',
         'liabilities',
-        'liabilities_description',
+        'liabilities_amount',
         'installment',
         'car_brand',
         'car_name',
+        'car_model',
         'notes',
         'user_id',
     ];

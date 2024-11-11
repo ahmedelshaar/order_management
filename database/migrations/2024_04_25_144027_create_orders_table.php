@@ -23,10 +23,10 @@ return new class extends Migration
             $table->decimal('salary', 10, 2);
             $table->string('bank');
             $table->boolean('liabilities')->default(false);
-            $table->text('liabilities_description')->nullable();
-            $table->decimal('installment', 10, 2)->default(0);
+            $table->decimal('liabilities_amount')->nullable();
             $table->string('car_brand');
             $table->string('car_name');
+            $table->string('car_model');
             $table->boolean('traffic_violations')->default(false);
             $table->text('notes')->nullable();
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
