@@ -237,11 +237,6 @@ class OrderResource extends Resource
                     ->label('الالتزامات')
                     ->toggleable()
                     ->boolean(),
-                Tables\Columns\TextColumn::make('installment')
-                    ->label('القسط')
-                    ->numeric()
-                    ->toggleable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('car_brand')
                     ->label('الماركة')
                     ->toggleable()
