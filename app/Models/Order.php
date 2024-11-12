@@ -33,11 +33,4 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
-
-//    public function setStatusAttribute($value): void
-//    {
-//        $this->attributes['status'] = \App\Enums\OrderStatusEnum::getValue($value);
-//    }
 }
