@@ -13,32 +13,32 @@ class OrderController extends Controller
             'name' => 'required|string',
             'age' => 'required|numeric',
             'mobile_number' => 'required',
-            'is_saudi' => 'required|in:غير_سعودي,سعودي',
+            'is_saudi' => 'required|in:غير سعودي,سعودي',
             'city' => 'required|string',
             'company_name' => 'required|string',
             'salary' => 'required|numeric',
             'bank' => 'required|string',
-            'liabilities' => 'required|in:لا_يوجد,يوجد',
+            'liabilities' => 'required|in:لا يوجد,يوجد',
             'liabilities_amount' => 'nullable|numeric',
             'car_brand' => 'required|string',
             'car_name' => 'required|string',
             'car_model' => 'required|string',
-            'traffic_violations' => 'required|in:لا_يوجد,يوجد',
+            'traffic_violations' => 'required|in:لا يوجد,يوجد',
         ]);
 
-        if ($data['liabilities'] === 'لا_يوجد') {
+        if ($data['liabilities'] === 'لا يوجد') {
             $data['liabilities'] = false;
         }else{
             $data['liabilities'] = true;
         }
 
-        if ($data['traffic_violations'] === 'لا_يوجد') {
+        if ($data['traffic_violations'] === 'لا يوجد') {
             $data['traffic_violations'] = false;
         }else{
             $data['traffic_violations'] = true;
         }
 
-        if ($data['is_saudi'] === 'غير_سعودي') {
+        if ($data['is_saudi'] === 'غير سعودي') {
             $data['is_saudi'] = false;
         }else{
             $data['is_saudi'] = true;

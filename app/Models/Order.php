@@ -14,19 +14,19 @@ class Order extends Model
         'name',
         'age',
         'mobile_number',
-        'nationality',
+        'is_saudi',
         'city',
         'company_name',
         'salary',
         'bank',
         'liabilities',
         'liabilities_amount',
-        'installment',
         'car_brand',
         'car_name',
         'car_model',
         'notes',
         'user_id',
+        'traffic_violations'
     ];
 
     public function user(): \Illuminate\Database\Eloquent\Relations\BelongsTo
