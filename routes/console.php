@@ -8,6 +8,7 @@ Artisan::command('assign', function () {
     foreach ($orders as $order) {
         // must be user have less than 10 orders
         $user = \App\Models\User::where('auto_assign', true)
+            ->where('role', 1)
             ->withCount(['orders' => function ($query) {
                 $query->where('status', \App\Enums\OrderStatusEnum::NEW);
             }])
