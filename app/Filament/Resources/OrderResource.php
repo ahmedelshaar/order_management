@@ -82,7 +82,7 @@ class OrderResource extends Resource
                             ->searchable()
                             ->preload()
                             ->disabled(fn () => auth()->user()->role === 1)
-                            ->relationship('user', 'name', fn($query) => $query->where('role', 2))
+                            ->relationship('user', 'name', fn($query) => $query->where('id', '!=', 2))
                     ])
                     ->columns(2),
                 Forms\Components\Split::make([
@@ -277,7 +277,7 @@ class OrderResource extends Resource
                     ->preload()
                     ->searchable()
                     ->visible(fn () => auth()->user()->role == 2)
-                    ->relationship('user', 'name', fn ($query) => $query->where('role', 2)),
+                    ->relationship('user', 'name', fn ($query) => $query->where('id', '!=', 2)),
                 Tables\Filters\SelectFilter::make('status')
                     ->label('الحالة')
                     ->options([
@@ -332,7 +332,7 @@ class OrderResource extends Resource
                                 ->required()
                                 ->preload()
                                 ->searchable()
-                                ->relationship('user', 'name', fn ($query) => $query->where('role', 2))
+                                ->relationship('user', 'name', fn ($query) => $query->where('id', '!=', 2))
                         ])
                         ->requiresConfirmation()
                         ->action(function (Collection $records, array $data) {
