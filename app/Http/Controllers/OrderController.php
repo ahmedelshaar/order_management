@@ -19,7 +19,7 @@ class OrderController extends Controller
             'salary' => 'required|numeric',
             'bank' => 'required|string',
             'liabilities' => 'required|boolean',
-            'liabilities_amount' => 'required|numeric',
+            'liabilities_amount' => 'nullable|numeric',
             'car_brand' => 'required|string',
             'car_name' => 'required|string',
             'car_model' => 'required|string',
@@ -27,5 +27,7 @@ class OrderController extends Controller
         ]);
 
         Order::create($data);
+
+        return response()->json(['message' => 'Order created successfully']);
     }
 }
