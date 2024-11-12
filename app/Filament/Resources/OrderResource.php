@@ -136,8 +136,9 @@ class OrderResource extends Resource
                                     0 => 'لا',
                                 ])
                                 ->required(),
-                            Forms\Components\Textarea::make('liabilities_amount')
+                            Forms\Components\TextInput::make('liabilities_amount')
                                 ->label('قيمة الالتزامات')
+                                ->integer()
                                 ->columnSpanFull(),
                         ])
                 ])->columnSpanFull(),
